@@ -9,7 +9,7 @@ import urllib2
 from datetime import datetime
 from bs4 import BeautifulSoup
 import requests
-from dateutil.parser import parse
+
 
 #### FUNCTIONS 1.0
 
@@ -108,9 +108,9 @@ for link in links:
         if 'suppliers ' in csvfile:
             csvfile = csvfile.split('suppliers ')[-1].strip()
         if 'csv V2in CSV' in csvfile:
-              csvfile = 'Q3 2011'
+              csvfile = 'Q3 2010'
         if 'V2'  in csvfile:
-              csvfile = 'Q2 2011'
+              csvfile = 'Q2 2010'
         if '(csv)' in csvfile:
             csvfile = csvfile.split('(csv)')[0].strip()
         if  'csv in CSV Document' in csvfile:
