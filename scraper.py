@@ -8,7 +8,7 @@ import scraperwiki
 import urllib2
 from datetime import datetime
 from bs4 import BeautifulSoup
-import requests
+
 
 
 #### FUNCTIONS 1.0
@@ -39,19 +39,20 @@ def validateFilename(filename):
 
 def validateURL(url):
     try:
-        r = requests.get(url, allow_redirects=True, timeout=20)
+        r = urllib2.urlopen(url)
         count = 1
-        while r.status_code == 500 and count < 4:
+        while r.getcode() == 500 and count < 4:
             print ("Attempt {0} - Status code: {1}. Retrying.".format(count, r.status_code))
             count += 1
-            r = requests.get(url, allow_redirects=True, timeout=20)
+            r = urllib2.urlopen(url)
         sourceFilename = r.headers.get('Content-Disposition')
+
         if sourceFilename:
             ext = os.path.splitext(sourceFilename)[1].replace('"', '').replace(';', '').replace(' ', '')
         else:
             ext = os.path.splitext(url)[1]
-        validURL = r.status_code == 200
-        validFiletype = ext in ['.csv', '.xls', '.xlsx']
+        validURL = r.getcode() == 200
+        validFiletype = ext.lower() in ['.csv', '.xls', '.xlsx']
         return validURL, validFiletype
     except:
         print ("Error validating URL.")
@@ -117,13 +118,14 @@ for link in links:
             csvfile = csvfile.split('csv in CSV Document')[0].strip()
         if 'in CSV Document' in csvfile:
             csvfile = csvfile.split('in CSV Document')[0].strip()
-        csvMth = csvfile.split(' ')[0][:3]
-        csvYr = csvfile.split(' ')[-1]
-        if len(csvYr) == 2:
-            csvYr = '20'+csvYr
+        if csvfile:
+            csvMth = csvfile.split(' ')[0][:3]
+            csvYr = csvfile.split(' ')[-1]
+            if len(csvYr) == 2:
+                csvYr = '20'+csvYr
 
-        csvMth = convert_mth_strings(csvMth.upper())
-        data.append([csvYr, csvMth, url])
+            csvMth = convert_mth_strings(csvMth.upper())
+            data.append([csvYr, csvMth, url])
 
 
 #### STORE DATA 1.0
